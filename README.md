@@ -1,3 +1,5 @@
+![Merry Christmas!](https://github.com/nowizardsallowed/AoC-2020-ruby/blob/main/roob.png "Merry Christmas!")
+
 # Ruby solutions for Advent of Code 2020:
 
 What a better time to learn a new language than during AoC, I chose Ruby for this one as I have always been under the assumption (wrongly, I believe) that Python is (and should be) the go-to interpreted language for quickly solving problems. 

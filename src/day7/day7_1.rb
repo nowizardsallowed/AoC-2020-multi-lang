@@ -13,26 +13,11 @@
 #		dark => [[maroon, pale], [gray, dotted], [plum, muted], [orange, muted]]
 #		...
 #	etc.
-# Answer is each bag 
-
-bag_count = 0
+# Get answer by parsing through hash to find keys that include the current key.
+# Definitely not the most efficient answer. 
 
 def solve(inp_str, bag_hash)
-	r = bag_hash.select{ | k, v | v.include?(inp_str)}
-	bag_count += r.length
-
-	if ( r.length <= 0 ) then
-		return 0
-	else
-		print r, r.length
-		puts	
-		puts bag_count
-		puts " --- "
-		puts 
-		return r.map() { | k,v | 
-			solve(k, bag_hash)
-		}
-	end
+	return bag_hash.select{ | k, v | v.include?(inp_str)}
 end
 
 bag_arr = File.read('input').split("\n")
@@ -41,5 +26,15 @@ bag_hash = bag_hash.transform_values() { | v |
 	v.tr(".,", "").gsub(/\s?bags?/,"").split(/\s?[0-9]\s/).drop(1)
 }
 
-c = solve("shiny gold", bag_hash)
-puts c
+bags_checked = []
+bags_to_check = ["shiny gold"]
+
+while bags_to_check.any?
+	check_bag = bags_to_check.shift
+	solve(check_bag, bag_hash).each do | p |		
+		bags_checked.append(p[0])
+		bags_to_check.append(p[0])	
+	end
+end
+
+puts bags_checked.uniq.length

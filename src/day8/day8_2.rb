@@ -1,26 +1,23 @@
 # Handheld halting
-# Run the instruction, store the line, if we've visited the line before, we exit
-# 	and puts the accumulator.
-# Easy peasy.
-# This is (obviously) limited by the size of the file and would be better with an
-#	fseek-style approach.	
-
+# Parse through the list of instructions, change all nops to jmps, and vice versa.
+# For each change, try to solve the instruction set (run each instruction).
+# If the instruction set loops back on itself (reaches an instruction that has 
+#	previously been executed), return false.
+# Otherwise, return the accumulator and find our answer.
 
 def solve(line_arr)
 	change_arr = line_arr.clone.map(&:clone)
 
 	for n in 0..line_arr.length
-		if (line_arr[n] == nil) then
+		if !(line_arr[n]) then
 			return nil		
 		end
 		if line_arr[n][0] != "acc" then
 			line_arr[n][0] = (change_arr[n][0] == "nop") ? "jmp" : "nop"
-			parsed = parse(line_arr)
-			if (parsed[0]) then
-				return change_arr[n]
+
+			if ((parsed = parse(line_arr))) then
+				return parsed
 			else
-				print [line_arr[n], change_arr[n], parsed]
-				puts
 				line_arr[n] = change_arr[n]
 			end
 		end	
@@ -38,26 +35,19 @@ def parse(line_arr)
 		"jmp" => -> (x) { curr_line += x },
 		"nop" => -> (x) { curr_line += 1 }
 	}
-
-	for n in 0..line_arr.length
-		n = curr_line		
-		if (lines_visited.include?(n)) then
-			return false, accum
+	
+	while !(lines_visited.include?(curr_line))
+		if ( curr_line == line_arr.length ) then
+			return accum
+		else		
+			lines_visited.append(curr_line)
+			i, a  = line_arr[curr_line]
+			instr[i].call(a.to_i)
 		end
-		
-		i, a = line_arr[n]
-		lines_visited.append(n)
-		instr[i].call(a.to_i)
-		prev_line = n
 	end
 	
-	return true, accum
+	return false
 end
 
 f = File.readlines('input').map() { | l | l.split(" ") }
-solve(f)
-# Parse through the input, if an instruction is a jmp, switch it to a nop - vice versa. 
-# Save the index of the changed line and continue executing (parse).
-# If parse returns nothing, change back the instruction and parse until the next nop/
-# jmp instruction change.
-
+puts solve(f)
